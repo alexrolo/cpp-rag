@@ -20,9 +20,9 @@ using json = nlohmann::json;
 
 void answer_query(
     const std::string &query,
-    const services::EmbedderService &embedder_service,
-    const services::VectorService &vector_service,
-    const services::LlmService &llm_service,
+    const services::embedder::EmbedderService &embedder_service,
+    const services::vector::VectorService &vector_service,
+    const services::llm::LlmService &llm_service,
     const std::string &collection_name)
 {
     // Obtain embedding for query
@@ -30,7 +30,7 @@ void answer_query(
     std::vector<float> embedding_vector = embedder_service.GetEmbedding(query);
 
     // Search for documents with similar embeddings to that of the query
-    std::vector<repositories::SearchResult> search_results = vector_service.SearchSimilar(collection_name, embedding_vector, 5);
+    std::vector<repositories::vector::SearchResult> search_results = vector_service.SearchSimilar(collection_name, embedding_vector, 5);
     std::vector<std::string> context_documents;
     for (const auto &result : search_results)
     {
@@ -69,13 +69,13 @@ int main()
     http::HttpClient embedder_client(embedder_url);
     http::HttpClient vector_client(vector_db_url);
 
-    repositories::LlmRepository llm_repo(std::move(llm_client));
-    repositories::EmbedderRepository embedder_repo(std::move(embedder_client));
-    repositories::VectorRepository vector_repo(std::move(vector_client));
+    repositories::llm::LlmRepository llm_repo(std::move(llm_client));
+    repositories::embedder::EmbedderRepository embedder_repo(std::move(embedder_client));
+    repositories::vector::VectorRepository vector_repo(std::move(vector_client));
 
-    services::LlmService llm_service(std::move(llm_repo));
-    services::EmbedderService embedder_service(std::move(embedder_repo));
-    services::VectorService vector_service(std::move(vector_repo));
+    services::llm::LlmService llm_service(std::move(llm_repo));
+    services::embedder::EmbedderService embedder_service(std::move(embedder_repo));
+    services::vector::VectorService vector_service(std::move(vector_repo));
 
     const std::string collection_name = "test_collection";
 
@@ -106,7 +106,7 @@ int main()
 
     // Obtain embeddings for documents
     // std::string -> std::vector<float>
-    std::vector<repositories::VectorPoint> points;
+    std::vector<repositories::vector::VectorPoint> points;
     std::cout << "Collection contents:" << std::endl;
     for (int idx = 0; idx < documents.size(); ++idx)
     {
@@ -114,7 +114,7 @@ int main()
         std::cout << "[" << idx << "]\t" << doc << std::endl;
         std::vector<float> embedding_vector = embedder_service.GetEmbedding(doc);
         std::string j = json{{"text", doc}}.dump();
-        points.push_back(repositories::VectorPoint{idx, embedding_vector, j});
+        points.push_back(repositories::vector::VectorPoint{idx, embedding_vector, j});
     }
 
     // Create collection

@@ -5,14 +5,17 @@
 
 namespace repositories
 {
-    class LlmRepository
+    namespace llm
     {
-    private:
-        http::HttpClient http_client;
+        class LlmRepository
+        {
+        private:
+            http::HttpClient http_client;
 
-    public:
-        explicit LlmRepository(http::HttpClient client) : http_client(std::move(client)) {}
+        public:
+            explicit LlmRepository(http::HttpClient client) : http_client(std::move(client)) {}
 
-        std::string GenerateCompletion(const std::string &prompt, unsigned int max_tokens = 512) const;
-    };
+            std::string GenerateCompletion(const std::string &prompt, unsigned int max_tokens = 512) const;
+        };
+    }
 };

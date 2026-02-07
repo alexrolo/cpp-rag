@@ -6,16 +6,19 @@
 
 namespace services
 {
-    class LlmService
+    namespace llm
     {
-    private:
-        repositories::LlmRepository llm_repository;
+        class LlmService
+        {
+        private:
+            repositories::llm::LlmRepository llm_repository;
 
-    public:
-        explicit LlmService(repositories::LlmRepository repository) : llm_repository(std::move(repository)) {}
+        public:
+            explicit LlmService(repositories::llm::LlmRepository repository) : llm_repository(std::move(repository)) {}
 
-        std::string GenerateAnswer(const std::string &question,
-                                   const std::vector<std::string> &context_documents,
-                                   unsigned int max_tokens = 128) const;
-    };
+            std::string GenerateAnswer(const std::string &question,
+                                       const std::vector<std::string> &context_documents,
+                                       unsigned int max_tokens = 128) const;
+        };
+    }
 };

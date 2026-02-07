@@ -4,15 +4,18 @@
 
 namespace repositories
 {
-    class EmbedderRepository
+    namespace embedder
     {
-    private:
-        http::HttpClient http_client;
+        class EmbedderRepository
+        {
+        private:
+            http::HttpClient http_client;
 
-    public:
-        explicit EmbedderRepository(http::HttpClient client) : http_client(
-                                                                   std::move(client)) {}
+        public:
+            explicit EmbedderRepository(http::HttpClient client) : http_client(
+                                                                       std::move(client)) {}
 
-        http::HttpResponse GetEmbedding(const std::string &input) const;
-    };
+            http::HttpResponse GetEmbedding(const std::string &input) const;
+        };
+    }
 };

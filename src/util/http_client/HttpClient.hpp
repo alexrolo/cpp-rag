@@ -5,42 +5,45 @@
 #include <optional>
 #include <string>
 
-namespace http
+namespace util
 {
-
-    class HttpResponse
+    namespace http
     {
-    public:
-        long status_code = 0;
-        std::string body;
-        std::map<std::string, std::string> headers;
-        std::string request_url;
-        std::string request_method;
-        std::string request_body;
 
-        void ThrowErrorIfFailed() const
+        class HttpResponse
         {
-            if (status_code < 200 || status_code >= 300)
+        public:
+            long status_code = 0;
+            std::string body;
+            std::map<std::string, std::string> headers;
+            std::string request_url;
+            std::string request_method;
+            std::string request_body;
+
+            void ThrowErrorIfFailed() const
             {
-                throw std::runtime_error("HTTP request failed with status code " + std::to_string(status_code) + ": " + body);
+                if (status_code < 200 || status_code >= 300)
+                {
+                    throw std::runtime_error("HTTP request failed with status code " + std::to_string(status_code) + ": " + body);
+                }
             }
-        }
+        };
+
+        class HttpClient
+        {
+        public:
+            explicit HttpClient(std::string base_url);
+
+            HttpResponse Get(const std::string &path) const;
+            HttpResponse Post(const std::string &path,
+                              const std::optional<std::string> &json_body = std::nullopt) const;
+            HttpResponse Put(const std::string &path,
+                             const std::optional<std::string> &json_body = std::nullopt) const;
+            HttpResponse Delete(const std::string &path) const;
+
+        private:
+            std::string base_url_;
+        };
+
     };
-
-    class HttpClient
-    {
-    public:
-        explicit HttpClient(std::string base_url);
-
-        HttpResponse Get(const std::string &path) const;
-        HttpResponse Post(const std::string &path,
-                          const std::optional<std::string> &json_body = std::nullopt) const;
-        HttpResponse Put(const std::string &path,
-                         const std::optional<std::string> &json_body = std::nullopt) const;
-        HttpResponse Delete(const std::string &path) const;
-
-    private:
-        std::string base_url_;
-    };
-
 };
