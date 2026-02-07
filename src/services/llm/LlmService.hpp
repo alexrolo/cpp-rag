@@ -15,6 +15,7 @@ namespace services
         explicit LlmService(repositories::LlmRepository repository) : llm_repository(std::move(repository)) {}
 
         std::string GenerateAnswer(const std::string &question,
-                                   const std::vector<std::string> &context_documents) const;
+                                   const std::vector<std::string> &context_documents,
+                                   unsigned int max_tokens = 128) const;
     };
 };

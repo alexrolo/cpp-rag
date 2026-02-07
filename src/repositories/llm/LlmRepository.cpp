@@ -6,18 +6,16 @@ using json = nlohmann::json;
 
 namespace repositories
 {
-    std::string LlmRepository::GenerateCompletion(const std::string &prompt, int max_tokens) const
+    std::string LlmRepository::GenerateCompletion(const std::string &prompt, unsigned int max_tokens) const
     {
         const std::string path = "/v1/completions";
 
-        std::ostringstream json_body;
-        json_body << "{"
-                  << "\"prompt\":\"" << prompt << "\""
-                  << ",\"n_predict\":" << max_tokens
-                  << ",\"temperature\":0.7"
-                  << "}";
+        json request_json;
+        request_json["prompt"] = prompt;
+        request_json["n_predict"] = max_tokens;
+        request_json["temperature"] = 0.7;
 
-        http::HttpResponse response = http_client.Post(path, json_body.str());
+        http::HttpResponse response = http_client.Post(path, request_json.dump());
         response.ThrowErrorIfFailed();
 
         json response_json = json::parse(response.body);
