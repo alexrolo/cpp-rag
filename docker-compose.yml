@@ -1,0 +1,54 @@
+version: '3.8'
+name: rag
+
+services:
+
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: rag-llm
+    volumes:
+      - ./models/llm:/models
+    ports:
+      - "8080:8080"
+    environment:
+      - MODEL=/models/model.gguf
+    command: "--host 0.0.0.0 --port 8080 --model /models/model.gguf --ctx-size 4096 --n-gpu-layers 8 --no-jinja --chat-template mistral"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+  embeddings:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: rag-embeddings
+    volumes:
+      - ./models/embedding:/models
+    ports:
+      - "8081:8081"
+    environment:
+      - MODEL=/models/model.gguf
+    command: "--host 0.0.0.0 --port 8081 --model /models/model.gguf --embedding --ctx-size 512 --n-gpu-layers 32"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+  vector-db:
+    image: qdrant/qdrant
+    container_name: rag-vectordb
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
