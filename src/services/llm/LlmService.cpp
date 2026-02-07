@@ -3,8 +3,8 @@
 
 namespace services
 {
-    http::HttpResponse LlmService::GenerateAnswer(const std::string &question,
-                                                  const std::vector<std::string> &context_documents) const
+    std::string LlmService::GenerateAnswer(const std::string &question,
+                                           const std::vector<std::string> &context_documents) const
     {
         // Build context from documents
         std::ostringstream context_builder;

@@ -13,6 +13,6 @@ namespace repositories
     public:
         explicit LlmRepository(http::HttpClient client) : http_client(std::move(client)) {}
 
-        http::HttpResponse GenerateCompletion(const std::string &prompt, int max_tokens = 512) const;
+        std::string GenerateCompletion(const std::string &prompt, int max_tokens = 512) const;
     };
 };

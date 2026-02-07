@@ -27,23 +27,15 @@ void answer_query(
 {
     // Obtain embedding for query
     std::cout << "Query: " << query << std::endl;
-    http::HttpResponse response = embedder_service.GetEmbedding(query);
-    response.ThrowErrorIfFailed();
-    std::vector<float> embedding_vector;
-    json response_json = json::parse(response.body);
-    const auto &embedding = response_json["data"][0]["embedding"];
-    embedding_vector = embedding.get<std::vector<float>>();
+    std::vector<float> embedding_vector = embedder_service.GetEmbedding(query);
 
     // Search for documents with similar embeddings to that of the query
-    response = vector_service.SearchSimilar(collection_name, embedding_vector, 5);
-    response.ThrowErrorIfFailed();
+    std::vector<repositories::SearchResult> search_results = vector_service.SearchSimilar(collection_name, embedding_vector, 5);
     std::vector<std::string> context_documents;
-    json search_json = json::parse(response.body);
-    for (const auto &result : search_json["result"])
+    for (const auto &result : search_results)
     {
-        const auto &payload = result["payload"];
-        context_documents.push_back(payload["text"].get<std::string>());
-        std::cout << "[" << result["id"] << " - " << result["score"] << "] " << payload["text"].get<std::string>() << std::endl;
+        std::cout << "[" << result.id << " - " << result.score << "] " << result.payload << std::endl;
+        context_documents.push_back(result.payload);
     }
 
     // Generate answer using LLM based on retrieved context documents and the query
@@ -51,9 +43,8 @@ void answer_query(
     {
         std::cout << "Generating answer with " << context_documents.size() << " context documents..."
                   << std::endl;
-        response = llm_service.GenerateAnswer(query, context_documents);
-        json response_json = json::parse(response.body);
-        std::cout << "LLM Response Body: " << response_json["choices"][0]["text"] << std::endl;
+        std::string response = llm_service.GenerateAnswer(query, context_documents);
+        std::cout << "LLM Response Body: " << response << std::endl;
     }
 
     return;
@@ -121,17 +112,13 @@ int main()
     {
         const std::string &doc = documents[idx];
         std::cout << "[" << idx << "]\t" << doc << std::endl;
-        response = embedder_service.GetEmbedding(doc);
-        response.ThrowErrorIfFailed();
-        json response_json = json::parse(response.body);
-        const auto &embedding = response_json["data"][0]["embedding"];
-        std::vector<float> embedding_vector = embedding.get<std::vector<float>>();
+        std::vector<float> embedding_vector = embedder_service.GetEmbedding(doc);
         std::string j = json{{"text", doc}}.dump();
         points.push_back(repositories::VectorPoint{idx, embedding_vector, j});
     }
 
     // Create collection
-    response = vector_service.CreateCollection(collection_name, 768);
+    response = vector_service.CreateCollection(collection_name, points[0].vector.size());
     vector_service.UpsertPoints(collection_name, points);
 
     // Queries

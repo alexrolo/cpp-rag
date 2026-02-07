@@ -2,6 +2,7 @@
 
 namespace services
 {
+
     http::HttpResponse VectorService::CreateCollection(const std::string &collection_name, int vector_size) const
     {
         return vector_repository.CreateCollection(collection_name, vector_size);
@@ -32,9 +33,9 @@ namespace services
         return vector_repository.DeletePoint(collection_name, point_id);
     }
 
-    http::HttpResponse VectorService::SearchSimilar(const std::string &collection_name,
-                                                    const std::vector<float> &query_vector,
-                                                    int limit) const
+    std::vector<repositories::SearchResult> VectorService::SearchSimilar(const std::string &collection_name,
+                                                                         const std::vector<float> &query_vector,
+                                                                         int limit) const
     {
         return vector_repository.SearchSimilar(collection_name, query_vector, limit);
     }

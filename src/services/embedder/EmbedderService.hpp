@@ -2,6 +2,8 @@
 
 #include "repositories/embedder/EmbedderRepository.hpp"
 
+#include <vector>
+
 namespace services
 {
     class EmbedderService
@@ -12,6 +14,6 @@ namespace services
     public:
         explicit EmbedderService(repositories::EmbedderRepository repository) : embedder_repository(std::move(repository)) {}
 
-        http::HttpResponse GetEmbedding(const std::string &input) const;
+        std::vector<float> GetEmbedding(const std::string &input) const;
     };
 };

@@ -1,5 +1,8 @@
 #include "VectorRepository.hpp"
 #include <sstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace repositories
 {
@@ -79,9 +82,9 @@ namespace repositories
         return http_client.Post(path, json_body.str());
     }
 
-    http::HttpResponse VectorRepository::SearchSimilar(const std::string &collection_name,
-                                                       const std::vector<float> &query_vector,
-                                                       int limit) const
+    std::vector<SearchResult> VectorRepository::SearchSimilar(const std::string &collection_name,
+                                                              const std::vector<float> &query_vector,
+                                                              int limit) const
     {
         const std::string path = "/collections/" + collection_name + "/points/search";
 
@@ -97,6 +100,20 @@ namespace repositories
 
         json_body << "],\"limit\":" << limit << ",\"with_payload\":true}";
 
-        return http_client.Post(path, json_body.str());
+        http::HttpResponse response = http_client.Post(path, json_body.str());
+        response.ThrowErrorIfFailed();
+
+        std::vector<SearchResult> context_documents;
+        json search_json = json::parse(response.body);
+        for (const auto &result : search_json["result"])
+        {
+            const auto &payload = result["payload"];
+            SearchResult point{
+                result["id"].get<int>(),
+                result["score"].get<float>(),
+                payload["text"].get<std::string>()};
+            context_documents.push_back(point);
+        }
+        return context_documents;
     }
 };

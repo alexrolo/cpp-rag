@@ -14,7 +14,7 @@ namespace services
     public:
         explicit LlmService(repositories::LlmRepository repository) : llm_repository(std::move(repository)) {}
 
-        http::HttpResponse GenerateAnswer(const std::string &question,
-                                          const std::vector<std::string> &context_documents) const;
+        std::string GenerateAnswer(const std::string &question,
+                                   const std::vector<std::string> &context_documents) const;
     };
 };

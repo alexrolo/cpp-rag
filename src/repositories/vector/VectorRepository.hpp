@@ -13,6 +13,14 @@ namespace repositories
         std::string payload; // JSON string
     };
 
+    class SearchResult
+    {
+    public:
+        int id;
+        float score;
+        std::string payload;
+    };
+
     class VectorRepository
     {
     private:
@@ -32,8 +40,8 @@ namespace repositories
         http::HttpResponse DeletePoint(const std::string &collection_name, int point_id) const;
 
         // Search
-        http::HttpResponse SearchSimilar(const std::string &collection_name,
-                                         const std::vector<float> &query_vector,
-                                         int limit = 10) const;
+        std::vector<SearchResult> SearchSimilar(const std::string &collection_name,
+                                                const std::vector<float> &query_vector,
+                                                int limit = 10) const;
     };
 };

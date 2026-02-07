@@ -20,8 +20,8 @@ namespace services
         http::HttpResponse UpsertPoints(const std::string &collection_name, const std::vector<repositories::VectorPoint> &points) const;
         http::HttpResponse DeletePoint(const std::string &collection_name, int point_id) const;
 
-        http::HttpResponse SearchSimilar(const std::string &collection_name,
-                                         const std::vector<float> &query_vector,
-                                         int limit = 10) const;
+        std::vector<repositories::SearchResult> SearchSimilar(const std::string &collection_name,
+                                                              const std::vector<float> &query_vector,
+                                                              int limit = 10) const;
     };
 };
