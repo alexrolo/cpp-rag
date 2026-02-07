@@ -10,7 +10,7 @@ namespace services
     {
         std::vector<float> EmbedderService::GetEmbedding(const std::string &input) const
         {
-            http::HttpResponse response = embedder_repository.GetEmbedding(input);
+            util::http::HttpResponse response = embedder_repository.GetEmbedding(input);
             response.ThrowErrorIfFailed();
 
             json response_json = json::parse(response.body);

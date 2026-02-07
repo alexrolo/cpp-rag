@@ -53,7 +53,7 @@ void answer_query(
 int main()
 {
     // Load environment variables from .env file
-    util::EnvLoader env_loader;
+    util::env::EnvLoader env_loader;
     if (!env_loader.Load(".env"))
     {
         std::cerr << "Error: Could not load .env file" << std::endl;
@@ -65,9 +65,9 @@ int main()
     const std::string embedder_url = env_loader.Get("EMBEDDER_SERVICE_URL", "http://localhost:8081");
     const std::string vector_db_url = env_loader.Get("VECTOR_DB_URL", "http://localhost:6333");
 
-    http::HttpClient llm_client(llm_url);
-    http::HttpClient embedder_client(embedder_url);
-    http::HttpClient vector_client(vector_db_url);
+    util::http::HttpClient llm_client(llm_url);
+    util::http::HttpClient embedder_client(embedder_url);
+    util::http::HttpClient vector_client(vector_db_url);
 
     repositories::llm::LlmRepository llm_repo(std::move(llm_client));
     repositories::embedder::EmbedderRepository embedder_repo(std::move(embedder_client));
@@ -80,7 +80,7 @@ int main()
     const std::string collection_name = "test_collection";
 
     // Check if collection exists and delete it for a clean slate
-    http::HttpResponse response = vector_service.GetCollection(collection_name);
+    util::http::HttpResponse response = vector_service.GetCollection(collection_name);
     if (response.status_code == 200)
     {
         std::cout << "Collection 'test_collection' already exists. Deleting it first..." << std::endl;

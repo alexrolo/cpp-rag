@@ -17,7 +17,7 @@ namespace repositories
             request_json["n_predict"] = max_tokens;
             request_json["temperature"] = 0.7;
 
-            http::HttpResponse response = http_client.Post(path, request_json.dump());
+            util::http::HttpResponse response = http_client.Post(path, request_json.dump());
             response.ThrowErrorIfFailed();
 
             json response_json = json::parse(response.body);

@@ -8,7 +8,7 @@ namespace repositories
 {
     namespace vector
     {
-        http::HttpResponse VectorRepository::CreateCollection(const std::string &collection_name, int vector_size) const
+        util::http::HttpResponse VectorRepository::CreateCollection(const std::string &collection_name, int vector_size) const
         {
             const std::string path = "/collections/" + collection_name;
             std::ostringstream json_body;
@@ -16,19 +16,19 @@ namespace repositories
             return http_client.Put(path, json_body.str());
         }
 
-        http::HttpResponse VectorRepository::GetCollection(const std::string &collection_name) const
+        util::http::HttpResponse VectorRepository::GetCollection(const std::string &collection_name) const
         {
             const std::string path = "/collections/" + collection_name;
             return http_client.Get(path);
         }
 
-        http::HttpResponse VectorRepository::DeleteCollection(const std::string &collection_name) const
+        util::http::HttpResponse VectorRepository::DeleteCollection(const std::string &collection_name) const
         {
             const std::string path = "/collections/" + collection_name;
             return http_client.Delete(path);
         }
 
-        http::HttpResponse VectorRepository::UpsertPoint(const std::string &collection_name, const VectorPoint &point) const
+        util::http::HttpResponse VectorRepository::UpsertPoint(const std::string &collection_name, const VectorPoint &point) const
         {
             const std::string path = "/collections/" + collection_name + "/points";
 
@@ -47,7 +47,7 @@ namespace repositories
             return http_client.Put(path, json_body.str());
         }
 
-        http::HttpResponse VectorRepository::UpsertPoints(const std::string &collection_name, const std::vector<VectorPoint> &points) const
+        util::http::HttpResponse VectorRepository::UpsertPoints(const std::string &collection_name, const std::vector<VectorPoint> &points) const
         {
             const std::string path = "/collections/" + collection_name + "/points";
 
@@ -76,7 +76,7 @@ namespace repositories
             return http_client.Put(path, json_body.str());
         }
 
-        http::HttpResponse VectorRepository::DeletePoint(const std::string &collection_name, int point_id) const
+        util::http::HttpResponse VectorRepository::DeletePoint(const std::string &collection_name, int point_id) const
         {
             const std::string path = "/collections/" + collection_name + "/points/delete";
             std::ostringstream json_body;
@@ -102,7 +102,7 @@ namespace repositories
 
             json_body << "],\"limit\":" << limit << ",\"with_payload\":true}";
 
-            http::HttpResponse response = http_client.Post(path, json_body.str());
+            util::http::HttpResponse response = http_client.Post(path, json_body.str());
             response.ThrowErrorIfFailed();
 
             std::vector<SearchResult> context_documents;
